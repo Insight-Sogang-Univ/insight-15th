@@ -1,0 +1,70 @@
+name: "과제 제출 이슈 자동화"
+
+on:
+  workflow_dispatch:
+    inputs:
+      session_info:
+        description: '세션 제목 (예: 심화세션 0차시)'
+        required: true
+        default: '00세션 0차시 과제 & 0차시 사전과제'
+      assignment_name:
+        description: '과제 파일명 (예: assignment_ensemble.ipynb, \n으로 구분)'
+        required: true
+        default: 'assignment_{주제}.ipynb'
+      requirements:
+        description: '과제 요구 사항 체크리스트 (내용만. \n으로 구분)'
+        required: true
+        default: '내용을 입력하세요'
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  create_issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: "과제 이슈 생성 및 학회원 할당"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUIREMENTS: ${{ github.event.inputs.requirements }}
+          ASSIGNMENT_NAME: ${{ github.event.inputs.assignment_name }}
+          SESSION_INFO: ${{ github.event.inputs.session_info }}
+        run: |
+          FORMATTED_ASSIGN=$(echo -e "$ASSIGNMENT_NAME" | sed 's/^/- [ ] /')
+
+          FORMATTED_REQ=$(echo -e "$REQUIREMENTS" | sed 's/^/- [ ] /')
+
+          # 15기의 이름, 깃허브 아이디가 들어갈 예정
+          members=(
+            "홍길동:hong123"
+            "김철수:chulsoo_dev"
+          )
+
+          for info in "${members[@]}"
+          do
+            name=$(echo $info | cut -d':' -f1)
+            id=$(echo $info | cut -d':' -f2)
+
+            issue_body=$(cat <<EOF
+          ### 🔍 과제
+          $FORMATTED_ASSIGN
+
+          ### 🔍 사전과제 요구사항
+          $FORMATTED_REQ
+
+          ### ✅ 과제 제출 확인 사항
+          - [ ] 본인의 브랜치에서 작업하고 add, commit, push 했나요?
+          - [ ] develop <- 본인 브랜치로 pull request 했나요?
+          EOF
+          )
+
+            gh issue create \
+              --title "[submit] $SESSION_INFO: $name" \
+              --body "$issue_body" \
+              --assignee "$id" \
+              --label "submit"
+          done
