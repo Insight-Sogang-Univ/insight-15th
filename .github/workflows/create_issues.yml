@@ -1,4 +1,4 @@
-name: "과제 제출 이슈 자동화"
+name: "과제 제출 이슈 자동화 - 교육세션"
 
 on:
   workflow_dispatch:
@@ -8,11 +8,11 @@ on:
         required: true
         default: '00세션 0차시 과제 & 0차시 사전과제'
       assignment_name:
-        description: '과제 파일명 (예: assignment_ensemble.ipynb, \n으로 구분)'
+        description: '과제 파일명 (\n으로 구분하여 여러 개 입력 가능)'
         required: true
         default: 'assignment_{주제}.ipynb'
       requirements:
-        description: '과제 요구 사항 체크리스트 (내용만. \n으로 구분)'
+        description: '과제 요구 사항 (\n으로 구분하여 여러 개 입력 가능)'
         required: true
         default: '내용을 입력하세요'
 
@@ -35,10 +35,9 @@ jobs:
           SESSION_INFO: ${{ github.event.inputs.session_info }}
         run: |
           FORMATTED_ASSIGN=$(echo -e "$ASSIGNMENT_NAME" | sed 's/^/- [ ] /')
-
           FORMATTED_REQ=$(echo -e "$REQUIREMENTS" | sed 's/^/- [ ] /')
 
-          # 15기의 이름, 깃허브 아이디가 들어갈 예정
+          # 15기의 이름:깃허브아이디 (띄어쓰기 없이 작성)
           members=(
             "홍길동:hong123"
             "김철수:chulsoo_dev"
@@ -60,8 +59,10 @@ jobs:
           - [ ] 본인의 브랜치에서 작업하고 add, commit, push 했나요?
           - [ ] develop <- 본인 브랜치로 pull request 했나요?
           EOF
-          )
+            )
 
+            echo "Creating issue for $name ($id)..."
+            
             gh issue create \
               --title "[submit] $SESSION_INFO: $name" \
               --body "$issue_body" \
