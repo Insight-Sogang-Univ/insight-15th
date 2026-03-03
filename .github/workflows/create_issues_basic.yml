@@ -37,10 +37,23 @@ jobs:
           FORMATTED_ASSIGN=$(echo -e "$ASSIGNMENT_NAME" | sed 's/^/- [ ] /')
           FORMATTED_REQ=$(echo -e "$REQUIREMENTS" | sed 's/^/- [ ] /')
 
-          # 15기의 이름:깃허브아이디 (띄어쓰기 없이 작성)
+          # 15기의 이름:깃허브아이디
           members=(
-            "홍길동:hong123"
-            "김철수:chulsoo_dev"
+            "방서영:sy212-894"
+            "권유철:kwonyc11"
+            "최록희:rookkix"
+            "정리나:Jeong-Rina"
+            "류시현:sihyun0529"
+            "손영현:younghyun729"
+            "김지윤:olgayooon"
+            "조대흠:damisoda"
+            "전수현:suiyon"
+            "김희연:hykim12118"
+            "한민영:hmy9691-jpg"
+            "이수빈:soobeen-lee"
+            "김진하:jxxxxnha"
+            "김민아:kmeenaa"
+            "오규원:gw020328-oss"
           )
 
           for info in "${members[@]}"
