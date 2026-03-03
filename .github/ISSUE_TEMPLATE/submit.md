@@ -15,4 +15,4 @@ assignees: ''
 - [ ] 
 
 ### ✅ 과제 제출 확인 사항
-- [ ] 본인의 이번 세션 브랜치에서 작업하고 add, commit, push 했나요?
+- [ ] 본인 브랜치에서 작업하고 add, commit, push 했나요?
