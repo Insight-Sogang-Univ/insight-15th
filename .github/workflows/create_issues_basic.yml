@@ -76,9 +76,10 @@ jobs:
 
             echo "Creating issue for $name ($id)..."
             
-            gh issue create \
-              --title "[submit] $SESSION_INFO: $name" \
-              --body "$issue_body" \
-              --assignee "$id" \
-              --label "submit"
-          done
+            gh api repos/$GITHUB_REPOSITORY/issues \
+              --method POST \
+              --field title="[submit] $SESSION_INFO: $name" \
+              --field body="$issue_body" \
+              --field "assignees[]=$id" \
+              --field "labels[]=submit"
+            done
