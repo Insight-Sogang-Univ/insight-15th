@@ -58,8 +58,8 @@ jobs:
 
           for info in "${members[@]}"
           do
-            name=$(echo $info | cut -d':' -f1)
-            id=$(echo $info | cut -d':' -f2)
+            name=$(echo $info | cut -d':' -f1 | xargs)
+            id=$(echo $info | cut -d':' -f2 | xargs)
 
             issue_body=$(cat <<EOF
           ### 🔍 과제
@@ -78,8 +78,10 @@ jobs:
             
             gh api repos/$GITHUB_REPOSITORY/issues \
               --method POST \
-              --field title="[submit] $SESSION_INFO: $name" \
-              --field body="$issue_body" \
-              --field "assignees[]=$id" \
-              --field "labels[]=submit"
-            done
+              -f title="[submit] $SESSION_INFO: $name" \
+              -f body="$issue_body" \
+              -f "assignees[]=$id" \
+              -f "labels[]=submit"
+
+            sleep 1
+          done
