@@ -16,11 +16,11 @@ on:
         required: true
         default: '내용을 입력하세요'
       current_session_assignee:
-        description: '이번 차시 담당자 ID - 과제 면제 (\n으로 구분)'
+        description: '이번 차시 담당자 ID - 과제 면제 (공백으로 구분)'
         required: false
         default: ''
       next_session_assignee:
-        description: '다음 차시 담당자 ID - 사전과제 면제 (\n으로 구분)'
+        description: '다음 차시 담당자 ID - 사전과제 면제 (공백으로 구분)'
         required: false
         default: ''
 
@@ -45,10 +45,7 @@ jobs:
           NEXT_ASSIGNEE: ${{ github.event.inputs.next_session_assignee }}
         run: |
           members=(
-            "김태희:cororongtina"
-            "최지원:jiwon-080"
             "이지영:jiyoung-0427"
-            "박준상:junsang2sc"
             "고유빈:Yubin-Koh"
             "조수현:chochoalice"
             "조민정:jmj-99"
@@ -56,8 +53,6 @@ jobs:
             "권도영:osmund0228"
             "안가은:peanuut24"
             "구준모:kjms1019"
-            "최윤지:yunjichoi37"
-            "방상운:greentreeswbang"
             "장유경:jjang-yukyung"
 
             "방서영:sy212-894"
@@ -77,8 +72,8 @@ jobs:
             "오규원:gw020328-oss"
           )
 
-          IFS=$'\n' read -ra CURRENT_LIST <<< "$CURRENT_ASSIGNEE"
-          IFS=$'\n' read -ra NEXT_LIST <<< "$NEXT_ASSIGNEE"
+          read -ra CURRENT_LIST <<< "$CURRENT_ASSIGNEE"
+          read -ra NEXT_LIST <<< "$NEXT_ASSIGNEE"
 
           is_in_list() {
             local target="$1"
