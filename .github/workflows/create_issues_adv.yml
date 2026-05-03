@@ -16,11 +16,11 @@ on:
         required: true
         default: '내용을 입력하세요'
       current_session_assignee:
-        description: '이번 차시 담당자 ID - 과제 면제 (\n으로 구분)'
+        description: '이번 차시 담당자 ID - 과제 면제 (공백으로 구분)'
         required: false
         default: ''
       next_session_assignee:
-        description: '다음 차시 담당자 ID - 사전과제 면제 (\n으로 구분)'
+        description: '다음 차시 담당자 ID - 사전과제 면제 (공백으로 구분)'
         required: false
         default: ''
 
@@ -72,8 +72,8 @@ jobs:
             "오규원:gw020328-oss"
           )
 
-          IFS=$'\n' read -ra CURRENT_LIST <<< "$CURRENT_ASSIGNEE"
-          IFS=$'\n' read -ra NEXT_LIST <<< "$NEXT_ASSIGNEE"
+          read -ra CURRENT_LIST <<< "$CURRENT_ASSIGNEE"
+          read -ra NEXT_LIST <<< "$NEXT_ASSIGNEE"
 
           is_in_list() {
             local target="$1"
