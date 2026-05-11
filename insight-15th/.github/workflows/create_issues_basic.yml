@@ -1,0 +1,87 @@
+name: "과제 제출 이슈 자동화 - 교육세션"
+
+on:
+  workflow_dispatch:
+    inputs:
+      session_info:
+        description: '세션 제목 (예: 심화세션 0차시)'
+        required: true
+        default: '00세션 0차시 과제 & 0차시 사전과제'
+      assignment_name:
+        description: '과제 파일명 (\n으로 구분하여 여러 개 입력 가능)'
+        required: true
+        default: 'assignment_{주제}.ipynb'
+      requirements:
+        description: '과제 요구 사항 (\n으로 구분하여 여러 개 입력 가능)'
+        required: true
+        default: '내용을 입력하세요'
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  create_issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: "과제 이슈 생성 및 학회원 할당"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUIREMENTS: ${{ github.event.inputs.requirements }}
+          ASSIGNMENT_NAME: ${{ github.event.inputs.assignment_name }}
+          SESSION_INFO: ${{ github.event.inputs.session_info }}
+        run: |
+          FORMATTED_ASSIGN=$(echo -e "$ASSIGNMENT_NAME" | sed 's/^/- [ ] /')
+          FORMATTED_REQ=$(echo -e "$REQUIREMENTS" | sed 's/^/- [ ] /')
+
+          # 15기의 이름:깃허브아이디
+          members=(
+            "방서영:sy212-894"
+            "권유철:kwonyc11"
+            "최록희:rookkix"
+            "정리나:Jeong-Rina"
+            "류시현:sihyun0529"
+            "손영현:younghyun729"
+            "김지윤:olgayooon"
+            "조대흠:damisoda"
+            "전수현:suiyon"
+            "김희연:hykim12118"
+            "한민영:hmy9691-jpg"
+            "이수빈:soobeen-lee"
+            "김진하:jxxxxnha"
+            "김민아:kmeenaa"
+            "오규원:gw020328-oss"
+          )
+
+          for info in "${members[@]}"
+          do
+            name=$(echo $info | cut -d':' -f1 | xargs)
+            id=$(echo $info | cut -d':' -f2 | xargs)
+
+            issue_body=$(cat <<EOF
+          ### 🔍 과제
+          $FORMATTED_ASSIGN
+
+          ### 🔍 사전과제 요구사항
+          $FORMATTED_REQ
+
+          ### ✅ 과제 제출 확인 사항
+          - [ ] 본인의 브랜치에서 작업하고 add, commit, push 했나요?
+          - [ ] develop <- 본인 브랜치로 pull request 했나요?
+          EOF
+            )
+
+            echo "Creating issue for $name ($id)..."
+            
+            gh api repos/$GITHUB_REPOSITORY/issues \
+              --method POST \
+              -f title="[submit] $SESSION_INFO: $name" \
+              -f body="$issue_body" \
+              -f "assignees[]=$id" \
+              -f "labels[]=submit"
+
+            sleep 1
+          done
